@@ -3,7 +3,6 @@ const ora = require("ora");
 const { log, getText } = global.utils;
 const { config } = global.GoatBot;
 const databaseType = config.database.type;
-const BankDataController = require("./bankData.js"); // Importer le contrôleur bancaire
 
 // with add null if not found data
 function fakeGraphql(query, data, obj = {}) {
@@ -30,10 +29,6 @@ function fakeGraphql(query, data, obj = {}) {
 
 module.exports = async function (api) {
 	var threadModel, userModel, dashBoardModel, globalModel, sequelize = null;
-	
-	// Créer l'instance du contrôleur bancaire
-	const bankData = new BankDataController();
-	
 	switch (databaseType) {
 		case "mongodb": {
 			const spin = ora({
@@ -104,7 +99,6 @@ module.exports = async function (api) {
 	const dashBoardData = await require("./dashBoardData.js")(databaseType, dashBoardModel, fakeGraphql);
 	const globalData = await require("./globalData.js")(databaseType, globalModel, fakeGraphql);
 
-	// Ajouter bankData à global.db
 	global.db = {
 		...global.db,
 		threadModel,
@@ -115,23 +109,8 @@ module.exports = async function (api) {
 		usersData,
 		dashBoardData,
 		globalData,
-		bankData, // Ajout du contrôleur bancaire
 		sequelize
 	};
-
-	// Créer le dossier data pour bankData s'il n'existe pas
-	const fs = require('fs-extra');
-	const path = require('path');
-	const bankDataDir = path.join(__dirname, '../data');
-	await fs.ensureDir(bankDataDir);
-	
-	const bankDataPath = path.join(bankDataDir, 'bankData.json');
-	if (!await fs.pathExists(bankDataPath)) {
-		await fs.writeJSON(bankDataPath, {});
-		log.info("BANK", "Fichier bankData.json créé avec succès");
-	}
-
-	log.info("BANK", "Système bancaire initialisé");
 
 	return {
 		threadModel,
@@ -142,7 +121,6 @@ module.exports = async function (api) {
 		usersData,
 		dashBoardData,
 		globalData,
-		bankData, // Retourner aussi bankData
 		sequelize,
 		databaseType
 	};
