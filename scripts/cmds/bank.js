@@ -1,11 +1,11 @@
 const { getTime } = global.utils;
-const fonts = require('../../func/fonts.js');
+const fonts = require('../../func/font.js');
 
 module.exports = {
 	config: {
 		name: "bank",
 		version: "4.0",
-		author: "Aryan Chauhan",
+		author: "Christus",
 		countDown: 0,
 		role: 0,
 		description: {
